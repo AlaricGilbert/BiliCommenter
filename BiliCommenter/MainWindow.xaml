@@ -1,0 +1,191 @@
+﻿<mahCtrls:MetroWindow x:Class="BiliCommenter.MainWindow"
+        xmlns:mahCtrls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BiliCommenter"
+        mc:Ignorable="d"
+        Title="Bilibili Commenter" Height="600" Width="1000">
+    <mahCtrls:MetroWindow.Resources>
+    </mahCtrls:MetroWindow.Resources>
+    <mahCtrls:MetroWindow.RightWindowCommands>
+        <mahCtrls:WindowCommands ShowLastSeparator="False">
+            <Button 
+                FontFamily="Segoe UI Symbol"
+                Content="&#xe115;" 
+                Click="ChangeFlyouts"/>
+        </mahCtrls:WindowCommands>
+    </mahCtrls:MetroWindow.RightWindowCommands>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="550"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Bangumi List:" Grid.Row="0"/>
+            <Separator Grid.Row="1"/>
+            <ListBox Name="BangumiListBox" Grid.Row="2" SelectionChanged="BangumiListBox_SelectionChanged" SelectedIndex="0"/>
+        </Grid>
+        <Grid Grid.Column="3" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="120"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Image Name="BangumiCover" Grid.Column="0"/>
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Label Name="BangumiTitle" Grid.Row="0"/>
+                    <Label Name="BangumiSeason" Grid.Row="1"/>
+                    <Label Name="BangumiDate" Grid.Row="2"/>
+                    <Label Name="BangumiTime" Grid.Row="3"/>
+                </Grid>
+                <Grid Grid.Column="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="15"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Button Content="Add/Update" Grid.Row="1" Click="AddOrUpdate"/>
+                    <Button Content="Remove" Grid.Row="3" Click="Remove"/>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="2">
+                <GroupBox Header="Message">
+                    <TextBox Name="MessageTextBox" TextChanged="MessageTextBox_TextChanged" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+                </GroupBox>
+            </Grid>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="Emoji" Name="EmojiButton" Click="EmojiButton_Click"/>
+                <Label Grid.Column="1" Name="MessageTBStatus" HorizontalAlignment="Right"/>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="5" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Task List:" Grid.Row="0"/>
+            <Separator Grid.Row="1"/>
+            <ListBox Name="TaskListBox" Grid.Column="5" Grid.Row="2" SelectedIndex="0"/>
+        </Grid>
+    </Grid>
+
+    <mahCtrls:MetroWindow.Flyouts>
+        <mahCtrls:FlyoutsControl>
+            <mahCtrls:Flyout Name="LoginFlyout" Header="Login" Position="Right" Width="400" Theme="Accent" >
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Margin="10 0 0 0" Name="LeftAvatar" HorizontalAlignment="Left" Height="74"  VerticalAlignment="Bottom" Width="81" Source="pack://application:,,,/avatar/ic_22.png"/>
+                        <Image Margin="220 0 0 0" Name="RightAvatar" HorizontalAlignment="Right" Height="80"  VerticalAlignment="Bottom" Width="77" Source="pack://application:,,,/avatar/ic_33.png"/>
+                    </StackPanel>
+                    <TextBox 
+                         Name="UsernameBox"
+                         GotFocus="TextBox_GotFocus"
+                         Margin="10 20 10 10"
+                         HorizontalContentAlignment="Stretch"
+                         mahCtrls:TextBoxHelper.ClearTextButton="True"
+                         mahCtrls:TextBoxHelper.IsWaitingForData="True"
+                         mahCtrls:TextBoxHelper.UseFloatingWatermark="True"
+                         mahCtrls:TextBoxHelper.Watermark="Username"
+                         mahCtrls:TextBoxHelper.WatermarkAlignment="Left"
+                         SpellCheck.IsEnabled="False"
+                         ToolTip="Default alignment">
+                        <TextBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Command="ApplicationCommands.Cut" Style="{DynamicResource MetroMenuItem}" />
+                                <MenuItem Command="ApplicationCommands.Copy" Style="{DynamicResource MetroMenuItem}" />
+                                <MenuItem Command="ApplicationCommands.Paste" Style="{DynamicResource MetroMenuItem}" />
+                            </ContextMenu>
+                        </TextBox.ContextMenu>
+                        
+                    </TextBox>
+                    <PasswordBox 
+                             Name="PasswordBox"
+                             GotFocus="PasswordBox_GotFocus"
+                             Margin="10 10 10 10"
+                             mahCtrls:TextBoxHelper.ClearTextButton="{Binding (mahCtrls:TextBoxHelper.HasText), Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                             mahCtrls:TextBoxHelper.IsWaitingForData="True"
+                             mahCtrls:TextBoxHelper.UseFloatingWatermark="True"
+                             mahCtrls:TextBoxHelper.Watermark="Password"
+                             Style="{StaticResource MetroButtonRevealedPasswordBox}" 
+                             KeyDown="PasswordBox_KeyDown"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="10 10 10 10">
+                        <Button 
+                            Content="Login"
+                            Width="180"
+                            Style="{DynamicResource AccentedSquareButtonStyle}"
+                            Click="LoginButton_Click"/>
+                        <Button 
+                            Content="Cancel"
+                            Width="180"
+                            Style="{DynamicResource AccentedSquareButtonStyle}" Margin="20,0,0,0" 
+                            Click="ChangeLoginFlyout"/>
+                    </StackPanel>
+                    <Label Margin="10 10 10 10" Name="ResultLabel" Foreground="Red" ></Label>
+
+                </StackPanel>
+
+            </mahCtrls:Flyout>
+            <mahCtrls:Flyout Name="LoggedFlyout" Header="Account" Position="Right" Width="200" Theme="Accent">
+                <StackPanel Orientation="Vertical">
+                    <Image Name="Avator" HorizontalAlignment="Center" Height="120"  VerticalAlignment="Top" Width="120" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Username:" Margin="10 10 0 10"/>
+                        <Label Content="" Margin="0 10 10 10" Name="UsernameLabel"/>
+                    </StackPanel>
+                    <Button Content="Logout" Margin="20 10 20 10" Style="{DynamicResource AccentedSquareButtonStyle}" Click="LogoutButton_Click"/>
+                </StackPanel>
+            </mahCtrls:Flyout>
+            <mahCtrls:Flyout Name="EmojiFlyout"  
+                             Position="Bottom" 
+                             Height="400" 
+                             Theme="Dark" 
+                             CloseButtonIsCancel="False" 
+                             Margin="50 0 50 0"
+                             CloseButtonVisibility="Collapsed"
+                             Header="Top"
+                             TitleVisibility="Collapsed">
+                <mahCtrls:MetroTabControl Name="EmojiTabControl" TabStripPlacement="Bottom" mahCtrls:ControlsHelper.HeaderFontSize="20">
+                </mahCtrls:MetroTabControl>
+            </mahCtrls:Flyout>
+        </mahCtrls:FlyoutsControl>
+    </mahCtrls:MetroWindow.Flyouts>
+</mahCtrls:MetroWindow>
