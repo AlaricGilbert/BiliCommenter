@@ -1,5 +1,6 @@
 ﻿using BiliCommenter.API;
 using BiliCommenter.Models;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 
@@ -12,18 +13,21 @@ namespace BiliCommenter.Core
         public int TaskId { get; set; }
         public BangumiInfo BangumiInfo { get; set; }
         public string Message { get; set; }
-        public Action<CommentTask> DeleteTask { get; set; }
         public Noticer Noticer { get; set; }
-        public CommentTask(DateTime time, int blid, int taskid, BangumiInfo bi, string message, Action<CommentTask> task)
+        public delegate void CommentTaskFinishedCallback(int taskid);
+        [JsonIgnore]
+        public CommentTaskFinishedCallback Callback { get; set; }
+        public CommentTask(DateTime time, int blid, int taskid, BangumiInfo bi, string message, CommentTaskFinishedCallback callback = null)
         {
-            Noticer = new Noticer(time, NoticerCallback);
+            Noticer = new Noticer(time);
             BangumiListId = blid;
             TaskId = taskid;
             BangumiInfo = bi;
             Message = message;
-            DeleteTask = task;
-            Noticer.Start();
+            Callback = callback;
         }
+        public void Start() => Noticer.Start(NoticerCallback);
+        public void Stop() => Noticer.Stop();
         public void NoticerCallback(Noticer sender)
         {
             bool running = true;
@@ -39,7 +43,7 @@ namespace BiliCommenter.Core
                 }
                 Thread.Sleep(20);
             }
-            DeleteTask?.Invoke(this);
+            Callback(TaskId);
         }
         public void Dispose()
         {

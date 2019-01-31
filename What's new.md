@@ -1,17 +1,58 @@
 # BiliCommenter What's new
 
-## 0.1.0.1
+## 0.2.x - currently mainly supporting version
 
-Bug fixxed:
-#1 Can't log-in correctly.
-#2 Multy-thread callback problem which would cause crash.[comment was sent correctly].
+### 0.2.0.0 - lots of new functions!!
+New features:
+```
+	#1 What's new document.
+	#2 Settings flyout.
+	#3 Task storage.
+	#4 Behaviour of CommentTask and Noticer were changed.
+	#5 Do NOT load emoji pictures while debugging.
+```
+Changes to be committed:
+```
+	new file:   What's new.md
+	modified:   BiliCommenter/App.config
+	modified:   BiliCommenter/MainWindow.xaml
+	modified:   BiliCommenter/MainWindow.xaml.cs
+	modified:   BiliCommenter/Properties/AssemblyInfo.cs
+	modified:   BiliCommenter/Properties/Settings.Designer.cs
+	modified:   BiliCommenter/Properties/Settings.settings
+	modified:   BiliCore/BiliCore.csproj
+	modified:   BiliCore/Core/CommentTask.cs
+	modified:   BiliCore/Core/Noticer.cs
+```
+
+**Notice: from now on, we'll only provide the release package since the feature #5 would make debug package not load the emojis.**
+
+## 0.1.x - indev versions - updating abandoned.
+
+### 0.1.0.2 - for release package.
+
+Release package will working now.
 
 Changes to be committed:
 
-		modified:   BiliCommenter/BiliCommenter.csproj
-		modified:   BiliCommenter/MainWindow.xaml.cs
-		modified:   BiliCommenter/Properties/AssemblyInfo.cs
-## 0.1.0.0 -Initial release.
+```
+	modified:   BiliCommenter/BiliCommenter.csproj
+	modified:   BiliCommenter/Properties/AssemblyInfo.cs
+```
+### 0.1.0.1
+
+Bug fixxed:
+```
+	#1 Can't log-in correctly.
+	#2 Multy-thread callback problem which would cause crash.[comment was sent correctly].
+```
+Changes to be committed:
+```
+	modified:   BiliCommenter/BiliCommenter.csproj
+	modified:   BiliCommenter/MainWindow.xaml.cs
+	modified:   BiliCommenter/Properties/AssemblyInfo.cs
+```
+### 0.1.0.0 -Initial release.
 
 The initial version.
 

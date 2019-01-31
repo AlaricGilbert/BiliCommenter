@@ -18,7 +18,7 @@
             <Button
                 FontFamily="Segoe UI Symbol"
                 Content="&#xe115;" 
-                Click="ChangeSettingFlyouts"/>
+                Click="ChangeSettingFlyout"/>
         </mahCtrls:WindowCommands>
     </mahCtrls:MetroWindow.RightWindowCommands>
 
@@ -107,7 +107,7 @@
             </Grid.RowDefinitions>
             <Label Content="Task List:" Grid.Row="0"/>
             <Separator Grid.Row="1"/>
-            <ListBox Name="TaskListBox" Grid.Column="5" Grid.Row="2" SelectedIndex="0"/>
+            <ListBox Name="TaskListBox" Grid.Column="5" Grid.Row="2" SelectedIndex="0" SelectionChanged="TasksListBox_SelectionChanged"/>
         </Grid>
     </Grid>
 
@@ -178,9 +178,9 @@
             </mahCtrls:Flyout>
             <mahCtrls:Flyout Name="SettingsFlyout" Header="Settings" Position="Right" Width="200" Theme="Accent">
                 <StackPanel Orientation="Vertical">
-                    <CheckBox Margin="30 10 10 10" Name="IsSaveAccessKey" Content="保存登陆状态" />
-                    <CheckBox Margin="30 10 10 10" Name="IsSaveTask" Content="保存任务状态" />
-                    <Button Margin="10 10 10 10" Content="SAVE"/>
+                    <mahCtrls:ToggleSwitch Margin="30 10 10 10" Name="IsSaveAccessKey" OnLabel="保存登陆状态" OffLabel="不保存登陆状态" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"/>
+                    <mahCtrls:ToggleSwitch Margin="30 10 10 10" Name="IsInheritTasks" OnLabel="继承任务状态" OffLabel="不继承任务状态" Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}"/>
+                    <Button Margin="10 10 10 10" Content="SAVE" Click="UpdateSettings"/>
                 </StackPanel>
             </mahCtrls:Flyout>
             <mahCtrls:Flyout Name="EmojiFlyout"  
