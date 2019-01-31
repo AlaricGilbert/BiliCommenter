@@ -1,8 +1,10 @@
 ﻿using BiliCommenter.API;
 using BiliCommenter.Core;
 using BiliCommenter.Models;
+using BiliCommenter.Properties;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,8 +25,8 @@ namespace BiliCommenter
     {
         public List<CommentTask> TaskList = new List<CommentTask>();
         public Dictionary<string, CommentTask> TaskPair = new Dictionary<string, CommentTask>();
-        private UserInfoModel.UserInfo UserInfo { get; set; }
         private List<BangumiInfo> Bangumis { get; set; }
+        private bool ListBoxChangedByAnother = false;
         public BitmapImage CreateBI(string url)
         {
             BitmapImage bi = new BitmapImage();
@@ -36,7 +38,7 @@ namespace BiliCommenter
         public MainWindow()
         {
             InitializeComponent();
-            InitializeControls();
+            Initialize();
         }
         public async Task FreshUserInfo()
         {
@@ -45,14 +47,16 @@ namespace BiliCommenter
             Avator.Source = CreateBI(Account.UserInfo.face);
             UsernameLabel.Content = Account.UserInfo.name;
         }
-        public void InitializeControls()
+        public void Initialize()
         {
+            //Inherit tasks.
+            if (Settings.Default.IsInheritTasks)
+                ReadTasks();
 
+            #region Read log-in informations
             Thread freshThread = new Thread(async () =>
             {
-                if (!File.Exists("bili.ack"))
-                    File.Create("bili.ack").Close();
-                string access_key = File.ReadAllText("bili.ack");
+                string access_key = Settings.Default.AccessKey;
                 if (access_key != "")
                 {
                     Account.AccessKey = access_key;
@@ -62,7 +66,11 @@ namespace BiliCommenter
                 else
                     this.Invoke(() => LoginFlyout.IsOpen = true);
             });
-            freshThread.Start();
+            if (Settings.Default.IsSaveAccessKey)
+                freshThread.Start();
+            #endregion
+
+            #region Get bangumi informations.
             Thread bangumiThread = new Thread(async () =>
             {
                 Bangumis = await Bangumi.GetBangumiInfosAsync();
@@ -74,6 +82,9 @@ namespace BiliCommenter
                 this.Invoke(() => BangumiListBox.ItemsSource = titles);
             });
             bangumiThread.Start();
+            #endregion
+
+            #region Get bilibili emojis.
             Thread emojiThread = new Thread(async () =>
             {
 
@@ -125,22 +136,25 @@ namespace BiliCommenter
                     });
                 }
             });
-            emojiThread.Start();
+#if !DEBUG
+            emojiThread.Start(); // do not load the emojis in the debug mode.
+#endif
+            #endregion
         }
-        private void ChangeLoginFlyout(object sender, RoutedEventArgs e)
-        {
-            LoginFlyout.IsOpen = !LoginFlyout.IsOpen;
-        }
-        private void ChangeLoggedFlyout(object sender, RoutedEventArgs e)
-        {
-            LoggedFlyout.IsOpen = !LoggedFlyout.IsOpen;
-        }
-        private void ChangeFlyouts(object sender, RoutedEventArgs e)
+        private void ChangeLoginFlyout(object sender, RoutedEventArgs e) => LoginFlyout.IsOpen = !LoginFlyout.IsOpen;
+        private void ChangeLoggedFlyout(object sender, RoutedEventArgs e) => LoggedFlyout.IsOpen = !LoggedFlyout.IsOpen;
+        private void ChangeLogStatusFlyouts(object sender, RoutedEventArgs e)
         {
             if (Account.OnlineStatus)
                 ChangeLoggedFlyout(sender,e);
             else
                 ChangeLoginFlyout(sender,e);
+        }
+        private void ChangeSettingFlyout(object sender, RoutedEventArgs e)
+        {
+            IsSaveAccessKey.IsChecked = Settings.Default.IsSaveAccessKey;
+            IsInheritTasks.IsChecked = Settings.Default.IsInheritTasks;
+            SettingsFlyout.IsOpen = !SettingsFlyout.IsOpen;
         }
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -165,7 +179,8 @@ namespace BiliCommenter
             Thread loginThread = new Thread(async () =>
             {
                 await Auth.LoginV3(username, password);
-                File.WriteAllText("bili.ack", Account.AccessKey);
+                if (Settings.Default.IsSaveAccessKey)
+                    Settings.Default.AccessKey = Account.AccessKey;
                 await this.Invoke(async () => {
                     await FreshUserInfo();
                     LoginFlyout.IsOpen = false;
@@ -184,12 +199,12 @@ namespace BiliCommenter
             Account.CookieString = "";
             Account.UserInfo = null;
             Account.OnlineStatus = false;
-            UserInfo = null;
             ChangeLoggedFlyout(sender, e);
             ChangeLoginFlyout(sender, e);
         }
         private void BangumiListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             var curr = Bangumis[BangumiListBox.SelectedIndex];
             BitmapImage bi = new BitmapImage();
             bi.BeginInit();
@@ -202,11 +217,32 @@ namespace BiliCommenter
             BangumiTime.Content = $"更新时间：{curr.UpdateTime.ToLongTimeString()}";
             if (TaskPair.ContainsKey(curr.Title))
             {
-                TaskListBox.SelectedItem = curr.Title;
-                MessageTextBox.Text = TaskPair[curr.Title].Message;
             }
             else
                 MessageTextBox.Text = "";
+            if (ListBoxChangedByAnother)
+                ListBoxChangedByAnother = false;
+            else
+            {
+                if (TaskPair.ContainsKey(curr.Title))
+                {
+                    ListBoxChangedByAnother = true;
+                    TaskListBox.SelectedIndex = TaskPair[curr.Title].TaskId;
+                }
+            }
+
+        }
+        private void TasksListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var currTask = TaskList[TaskListBox.SelectedIndex];
+            MessageTextBox.Text = currTask.Message;
+            if (ListBoxChangedByAnother)
+                ListBoxChangedByAnother = false;
+            else
+            {
+                ListBoxChangedByAnother = true;
+                BangumiListBox.SelectedIndex = currTask.BangumiListId;
+            }
         }
         private void MessageTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -239,6 +275,7 @@ namespace BiliCommenter
         }
         private void AddOrUpdate(object sender, RoutedEventArgs e)
         {
+            ReadTasks();
             if(TaskPair.ContainsKey(BangumiListBox.SelectedItem as string))
             {
                 TaskPair[BangumiListBox.SelectedItem as string].Message = MessageTextBox.Text;
@@ -250,19 +287,27 @@ namespace BiliCommenter
                     BangumiListBox.SelectedIndex,
                     TaskList.Count,
                     Bangumis[BangumiListBox.SelectedIndex],
-                    MessageTextBox.Text, new Action<CommentTask>((tsk) =>
-                    {
-                        TaskList.Remove(tsk);
-                        TaskPair.Remove(tsk.BangumiInfo.Title);
-                        TaskListBox.Items.Remove(tsk.BangumiInfo.Title);
-                    }));
+                    MessageTextBox.Text,
+                    new CommentTask.CommentTaskFinishedCallback((taskid) => {
+                        this.Invoke(() =>
+                        {
+                            var title = TaskList[taskid].BangumiInfo.Title;
+                            TaskList.RemoveAt(taskid);
+                            TaskPair.Remove(title);
+                            TaskListBox.Items.Remove(title);
+                        });
+                    })
+                    );
                 TaskList.Add(task);
                 TaskPair.Add(BangumiListBox.SelectedItem as string, task);
                 TaskListBox.Items.Add(task.BangumiInfo.Title);
+                task.Start();
             }
+            SaveCurrentTasks();
         }
         private void Remove(object sender, RoutedEventArgs e)
         {
+            ReadTasks();
             if (TaskListBox.Items.Count == 0)
                 return;
             var title = TaskListBox.SelectedItem as string;
@@ -271,6 +316,36 @@ namespace BiliCommenter
             TaskList.Remove(tsk);
             TaskPair.Remove(tsk.BangumiInfo.Title);
             TaskListBox.Items.Remove(tsk.BangumiInfo.Title);
+            SaveCurrentTasks();
+        }
+        private void SaveCurrentTasks()
+        {
+            var json = JsonConvert.SerializeObject(TaskList);
+            File.WriteAllText("tasks.json", json);
+        }
+        private void ReadTasks()
+        {
+            foreach (var task in TaskList)
+                task.Dispose();
+            TaskPair.Clear();
+            TaskListBox.Items.Clear();
+            if (File.Exists("tasks.json"))
+                TaskList = JsonConvert.DeserializeObject<List<CommentTask>>(File.ReadAllText("tasks.json"));
+            if (TaskList == null)
+                TaskList = new List<CommentTask>();
+            foreach (var task in TaskList)
+            {
+                task.TaskId = TaskListBox.Items.Count;
+                TaskListBox.Items.Add(task.BangumiInfo.Title);
+                TaskPair.Add(task.BangumiInfo.Title, task);
+                task.Start();
+            }
+        }
+        private void UpdateSettings(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.IsSaveAccessKey = IsSaveAccessKey.IsChecked == true;
+            Settings.Default.IsInheritTasks = IsInheritTasks.IsChecked == true;
+            Settings.Default.Save();
         }
     }
 }
