@@ -254,7 +254,7 @@ namespace BiliCommenter
                     {
                         TaskList.Remove(tsk);
                         TaskPair.Remove(tsk.BangumiInfo.Title);
-                        TaskListBox.Items.Remove(tsk.BangumiInfo.Title);
+                        this.Invoke(() => TaskListBox.Items.Remove(tsk.BangumiInfo.Title));
                     }));
                 TaskList.Add(task);
                 TaskPair.Add(BangumiListBox.SelectedItem as string, task);
