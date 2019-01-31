@@ -125,22 +125,22 @@ namespace BiliCommenter
                     });
                 }
             });
-            emojiThread.Start();
+#if !DEBUG
+            emojiThread.Start(); // do not load the emojis in the debug mode.
+#endif
         }
-        private void ChangeLoginFlyout(object sender, RoutedEventArgs e)
-        {
-            LoginFlyout.IsOpen = !LoginFlyout.IsOpen;
-        }
-        private void ChangeLoggedFlyout(object sender, RoutedEventArgs e)
-        {
-            LoggedFlyout.IsOpen = !LoggedFlyout.IsOpen;
-        }
-        private void ChangeFlyouts(object sender, RoutedEventArgs e)
+        private void ChangeLoginFlyout(object sender, RoutedEventArgs e) => LoginFlyout.IsOpen = !LoginFlyout.IsOpen;
+        private void ChangeLoggedFlyout(object sender, RoutedEventArgs e) => LoggedFlyout.IsOpen = !LoggedFlyout.IsOpen;
+        private void ChangeLogStatusFlyouts(object sender, RoutedEventArgs e)
         {
             if (Account.OnlineStatus)
                 ChangeLoggedFlyout(sender,e);
             else
                 ChangeLoginFlyout(sender,e);
+        }
+        private void ChangeSettingFlyouts(object sender, RoutedEventArgs e)
+        {
+            SettingsFlyout.IsOpen = !SettingsFlyout.IsOpen;
         }
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {

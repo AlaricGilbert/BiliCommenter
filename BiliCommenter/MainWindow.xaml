@@ -13,8 +13,12 @@
         <mahCtrls:WindowCommands ShowLastSeparator="False">
             <Button 
                 FontFamily="Segoe UI Symbol"
+                Content="&#xe13d;" 
+                Click="ChangeLogStatusFlyouts"/>
+            <Button
+                FontFamily="Segoe UI Symbol"
                 Content="&#xe115;" 
-                Click="ChangeFlyouts"/>
+                Click="ChangeSettingFlyouts"/>
         </mahCtrls:WindowCommands>
     </mahCtrls:MetroWindow.RightWindowCommands>
 
@@ -134,7 +138,7 @@
                                 <MenuItem Command="ApplicationCommands.Paste" Style="{DynamicResource MetroMenuItem}" />
                             </ContextMenu>
                         </TextBox.ContextMenu>
-                        
+
                     </TextBox>
                     <PasswordBox 
                              Name="PasswordBox"
@@ -160,9 +164,7 @@
                             Click="ChangeLoginFlyout"/>
                     </StackPanel>
                     <Label Margin="10 10 10 10" Name="ResultLabel" Foreground="Red" ></Label>
-
                 </StackPanel>
-
             </mahCtrls:Flyout>
             <mahCtrls:Flyout Name="LoggedFlyout" Header="Account" Position="Right" Width="200" Theme="Accent">
                 <StackPanel Orientation="Vertical">
@@ -172,6 +174,13 @@
                         <Label Content="" Margin="0 10 10 10" Name="UsernameLabel"/>
                     </StackPanel>
                     <Button Content="Logout" Margin="20 10 20 10" Style="{DynamicResource AccentedSquareButtonStyle}" Click="LogoutButton_Click"/>
+                </StackPanel>
+            </mahCtrls:Flyout>
+            <mahCtrls:Flyout Name="SettingsFlyout" Header="Settings" Position="Right" Width="200" Theme="Accent">
+                <StackPanel Orientation="Vertical">
+                    <CheckBox Margin="30 10 10 10" Name="IsSaveAccessKey" Content="保存登陆状态" />
+                    <CheckBox Margin="30 10 10 10" Name="IsSaveTask" Content="保存任务状态" />
+                    <Button Margin="10 10 10 10" Content="SAVE"/>
                 </StackPanel>
             </mahCtrls:Flyout>
             <mahCtrls:Flyout Name="EmojiFlyout"  
