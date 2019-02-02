@@ -178,9 +178,13 @@ namespace BiliCommenter
             }
             Thread loginThread = new Thread(async () =>
             {
+                // we should handle the exceptions that made it fail to login in the future version.
                 await Auth.LoginV3(username, password);
                 if (Settings.Default.IsSaveAccessKey)
+                {
                     Settings.Default.AccessKey = Account.AccessKey;
+                    Settings.Default.Save();
+                }
                 await this.Invoke(async () => {
                     await FreshUserInfo();
                     LoginFlyout.IsOpen = false;
@@ -288,15 +292,7 @@ namespace BiliCommenter
                     TaskList.Count,
                     Bangumis[BangumiListBox.SelectedIndex],
                     MessageTextBox.Text,
-                    new CommentTask.CommentTaskFinishedCallback((taskid) => {
-                        this.Invoke(() =>
-                        {
-                            var title = TaskList[taskid].BangumiInfo.Title;
-                            TaskList.RemoveAt(taskid);
-                            TaskPair.Remove(title);
-                            TaskListBox.Items.Remove(title);
-                        });
-                    })
+                    TaskCallback
                     );
                 TaskList.Add(task);
                 TaskPair.Add(BangumiListBox.SelectedItem as string, task);
@@ -304,6 +300,16 @@ namespace BiliCommenter
                 task.Start();
             }
             SaveCurrentTasks();
+        }
+        private void TaskCallback(int taskid)
+        {
+            this.Invoke(() =>
+            {
+                var title = TaskList[taskid].BangumiInfo.Title;
+                TaskList.RemoveAt(taskid);
+                TaskPair.Remove(title);
+                TaskListBox.Items.Remove(title);
+            });
         }
         private void Remove(object sender, RoutedEventArgs e)
         {
@@ -338,6 +344,7 @@ namespace BiliCommenter
                 task.TaskId = TaskListBox.Items.Count;
                 TaskListBox.Items.Add(task.BangumiInfo.Title);
                 TaskPair.Add(task.BangumiInfo.Title, task);
+                task.Callback = TaskCallback;
                 task.Start();
             }
         }

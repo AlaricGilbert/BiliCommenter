@@ -2,7 +2,26 @@
 
 ## 0.2.x - currently mainly supporting version
 
-### 0.2.0.0 - lots of new functions!!
+### 0.2.1.0
+
+Changes:
+
+```
+1.We're goting to stop submitting the file changes to this file.
+2.Some changes to README.md.
+```
+
+New features:
+
+```
+	#1 Console (cross-platform, .NET Core) version of this application that can read the tasks.json file and execute the tasks, although it's hard to use.
+	#2 @ManiaciaChao designed a logo for BC/WPF project.
+```
+
+Fixed some bugs in 0.2.0.0
+
+### 0.2.0.0 [Buggy]
+
 New features:
 ```
 	#1 What's new document.
@@ -29,7 +48,7 @@ Changes to be committed:
 
 ## 0.1.x - indev versions - updating abandoned.
 
-### 0.1.0.2 - for release package.
+### 0.1.0.2 - for release package. [Usable]
 
 Release package will working now.
 
@@ -39,7 +58,7 @@ Changes to be committed:
 	modified:   BiliCommenter/BiliCommenter.csproj
 	modified:   BiliCommenter/Properties/AssemblyInfo.cs
 ```
-### 0.1.0.1
+### 0.1.0.1 [Debug package usable]
 
 Bug fixxed:
 ```
@@ -52,7 +71,7 @@ Changes to be committed:
 	modified:   BiliCommenter/MainWindow.xaml.cs
 	modified:   BiliCommenter/Properties/AssemblyInfo.cs
 ```
-### 0.1.0.0 -Initial release.
+### 0.1.0.0 -Initial release. [Buggy]
 
 The initial version.
 
