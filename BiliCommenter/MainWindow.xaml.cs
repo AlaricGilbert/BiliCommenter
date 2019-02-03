@@ -19,14 +19,36 @@ using System.Windows.Media.Imaging;
 namespace BiliCommenter
 {
     /// <summary>
-    /// MainWindow.xaml Logic
+    /// Interactive logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        /// <summary>
+        /// List of the current tasks.
+        /// </summary>
         public List<CommentTask> TaskList = new List<CommentTask>();
+        /// <summary>
+        /// A map from the task's name to the task object instance.
+        /// </summary>
         public Dictionary<string, CommentTask> TaskPair = new Dictionary<string, CommentTask>();
+        /// <summary>
+        /// List of the on-updating bangumis.
+        /// </summary>
         private List<BangumiInfo> Bangumis { get; set; }
+        /// <summary>
+        /// Instance of the welcome window.
+        /// </summary>
+        private WelcomeWindow WelcomeWindow { get; } = new WelcomeWindow();
+        /// <summary>
+        /// A variable which marks the selected index number was changed by another,
+        /// preventing the infinite loop call between TaskListBox and BangumiListBox.
+        /// </summary>
         private bool ListBoxChangedByAnother = false;
+        /// <summary>
+        /// Create an BitmapImage uses the specified url.
+        /// </summary>
+        /// <param name="url">Image source</param>
+        /// <returns>The created image.</returns>
         public BitmapImage CreateBI(string url)
         {
             BitmapImage bi = new BitmapImage();
@@ -49,6 +71,10 @@ namespace BiliCommenter
         }
         public void Initialize()
         {
+            // Show the welcome window and hide the main window.
+            WelcomeWindow.Show();
+            this.Visibility = Visibility.Hidden;
+
             //Inherit tasks.
             if (Settings.Default.IsInheritTasks)
                 ReadTasks();
@@ -67,7 +93,7 @@ namespace BiliCommenter
                     this.Invoke(() => LoginFlyout.IsOpen = true);
             });
             if (Settings.Default.IsSaveAccessKey)
-                freshThread.Start();
+                freshThread.Start(); //Starts the thread only when Settings.Default.IsSaveAccessKey is set to True.
             #endregion
 
             #region Get bangumi informations.
@@ -76,9 +102,7 @@ namespace BiliCommenter
                 Bangumis = await Bangumi.GetBangumiInfosAsync();
                 List<string> titles = new List<string>();
                 for (int i = 0; i < Bangumis.Count; i++)
-                {
                     titles.Add(Bangumis[i].Title);
-                }
                 this.Invoke(() => BangumiListBox.ItemsSource = titles);
             });
             bangumiThread.Start();
@@ -87,12 +111,13 @@ namespace BiliCommenter
             #region Get bilibili emojis.
             Thread emojiThread = new Thread(async () =>
             {
-
+                // Get the list of the emojis.
                 var allEmojis = await Common.GetEmojisAsync();
 
                 for (int i = 0; i < allEmojis.Data.Count; i++)
                 {
                     var emojiPack = allEmojis.Data[i];
+                    // These part of code is a piece of s**t, but works :).
                     this.Invoke(() =>
                     {
                         var item = new TabItem();
@@ -135,6 +160,11 @@ namespace BiliCommenter
                         EmojiTabControl.Items.Add(item);
                     });
                 }
+                this.Invoke(() =>
+                {
+                    this.Visibility = Visibility.Visible;
+                    WelcomeWindow.Close();
+                });
             });
 #if !DEBUG
             emojiThread.Start(); // do not load the emojis in the debug mode.
@@ -341,11 +371,21 @@ namespace BiliCommenter
                 TaskList = new List<CommentTask>();
             foreach (var task in TaskList)
             {
-                task.TaskId = TaskListBox.Items.Count;
-                TaskListBox.Items.Add(task.BangumiInfo.Title);
-                TaskPair.Add(task.BangumiInfo.Title, task);
-                task.Callback = TaskCallback;
-                task.Start();
+                try
+                {
+                    task.TaskId = TaskListBox.Items.Count;
+                    task.Start();
+                    TaskListBox.Items.Add(task.BangumiInfo.Title);
+                    TaskPair.Add(task.BangumiInfo.Title, task);
+                    task.Callback = TaskCallback;
+                }
+                catch (ArgumentOutOfRangeException) // when target time is before the current time, Noticer throws.
+                {
+                    // remove it from
+                    TaskList.Remove(task);
+                    // there should be a logger system..
+                    task.Dispose();
+                }
             }
         }
         private void UpdateSettings(object sender, RoutedEventArgs e)

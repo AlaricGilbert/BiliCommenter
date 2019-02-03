@@ -2,6 +2,16 @@
 
 ## 0.2.x - currently mainly supporting version
 
+### 0.2.2.0
+
+New features:
+
+```
+Welcome window.
+```
+
+Fixed the task loading bug in 0.2.1.0.
+
 ### 0.2.1.0
 
 Changes:
