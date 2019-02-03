@@ -29,7 +29,7 @@ namespace BiliCommenter.Core
         public void Start(NoticerElapsedCallback callback)
         {
             if (Delta < 0)
-                throw new Exception();
+                throw new ArgumentOutOfRangeException("Target time should be after the current time.");
             Callback = callback;
             MainTimer = new Timer(1000);
             MainTimer.Elapsed += CheckTime;
