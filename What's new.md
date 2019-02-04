@@ -2,6 +2,14 @@
 
 ## 0.2.x - currently mainly supporting version
 
+### 0.2.2.1
+
+New features:
+
+```
+Migrate settings from the previous version.
+```
+
 ### 0.2.2.0
 
 New features:

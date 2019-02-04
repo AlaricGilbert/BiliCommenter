@@ -71,11 +71,19 @@ namespace BiliCommenter
         }
         public void Initialize()
         {
+            // Inherit settings.
+            if (Settings.Default.IsUpgrateNeeded)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.IsUpgrateNeeded = false;
+                Settings.Default.Save();
+            }
+
             // Show the welcome window and hide the main window.
             WelcomeWindow.Show();
             this.Visibility = Visibility.Hidden;
 
-            //Inherit tasks.
+            // Inherit tasks.
             if (Settings.Default.IsInheritTasks)
                 ReadTasks();
 
@@ -168,6 +176,9 @@ namespace BiliCommenter
             });
 #if !DEBUG
             emojiThread.Start(); // do not load the emojis in the debug mode.
+#else
+            this.Visibility = Visibility.Visible;
+            WelcomeWindow.Close();
 #endif
             #endregion
         }
