@@ -58,5 +58,17 @@ namespace BiliCommenter.Properties {
                 this["AccessKey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsUpgrateNeeded {
+            get {
+                return ((bool)(this["IsUpgrateNeeded"]));
+            }
+            set {
+                this["IsUpgrateNeeded"] = value;
+            }
+        }
     }
 }
