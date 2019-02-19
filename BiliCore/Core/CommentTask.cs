@@ -34,12 +34,15 @@ namespace BiliCommenter.Core
             while (running)
             {
                 var ep = Bangumi.GetBangumiEpAsync(BangumiInfo.SeasonId).Result;
-                if (ep.Result.Count == BangumiInfo.Index)
+                foreach (var item in ep.Result)
                 {
-                    var avid = ep.Result[BangumiInfo.Index - 1].Avid;
-                    var resu = Comment.SendAsync($"{avid}", Message).Result;
-                    Console.WriteLine(resu);
-                    running = false;
+                    if (item.Episode_id == BangumiInfo.EpNumber)
+                    {
+                        Thread.Sleep(800);
+                        var resu = Comment.SendAsync($"{item.Avid}", Message).Result;
+                        Console.WriteLine(resu);
+                        running = false;
+                    }
                 }
                 Thread.Sleep(20);
             }

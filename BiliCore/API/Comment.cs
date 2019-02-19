@@ -21,7 +21,6 @@ namespace BiliCommenter.API
                 new KeyValuePair<string, string>("jsonp", "jsonp"),
                 new KeyValuePair<string, string>("csrf", Account.CookieJObjet["bili_jct"].Value<string>())
             };
-            HttpClient hc = new HttpClient();
             using (var client = new HttpClient())
             {
                 var httpRequestMessage = new HttpRequestMessage

@@ -29,9 +29,10 @@ In further version 0.4.x, we're going to add those functions:
 * [ ] Themes (optional)./主题。
 * [ ] Login with CAPTCHA requirement./需要验证码的登陆处理。
 
-1.0.0:
+~~1.0.0:~~
 
-* [ ] iOS/Android Support。(咕咕咕咕咕咕咕~)
+* ~~iOS/Android Support。(咕咕咕咕咕咕咕~)~~
+* iOS/Android Support will be added in next version(0.3.x).
 
 ## Previews
 

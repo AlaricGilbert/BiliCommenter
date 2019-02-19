@@ -15,6 +15,7 @@ namespace BiliCommenter.API
             {
                 var result = await client.GetAsync("https://bangumi.bilibili.com/web_api/timeline_global");
                 var context = await result.Content.ReadAsStringAsync();
+                Console.WriteLine(context);
                 return JsonConvert.DeserializeObject<BangumiSeason>(context);
             }
         }
@@ -33,12 +34,13 @@ namespace BiliCommenter.API
                     pubts *= 10000000;
                     DateTime t = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     t = t.Add(new TimeSpan(pubts)).ToLocalTime();
-
+                    Console.WriteLine(season.Pub_index);
                     var binfo = new BangumiInfo
                     {
                         Cover = season.Cover,
                         SquareCover = season.Square_cover,
-                        Index = Convert.ToInt32(season.Pub_index.Substring(1, season.Pub_index.Length - 2)),
+                        Index = season.Pub_index.Substring(1, season.Pub_index.Length - 2),
+                        EpNumber = Convert.ToInt32(season.Ep_id),
                         SeasonId = season.Season_id,
                         Title = season.Title,
                         UpdateTime = t

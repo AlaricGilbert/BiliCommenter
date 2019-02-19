@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BiliCommenter"
         mc:Ignorable="d"
-        Title="Bilibili Commenter" Height="600" Width="1000">
+        Title="Bilibili Commenter (built for Nakano Miku)" Height="600" Width="1000">
     <mahCtrls:MetroWindow.Resources>
     </mahCtrls:MetroWindow.Resources>
     <mahCtrls:MetroWindow.RightWindowCommands>
@@ -87,7 +87,10 @@
             </Grid>
             <Grid Grid.Row="2">
                 <GroupBox Header="Message">
-                    <TextBox Name="MessageTextBox" TextChanged="MessageTextBox_TextChanged" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
+                    <Grid>
+                        <TextBox Panel.ZIndex="0" Name="MessageTextBox" TextChanged="MessageTextBox_TextChanged" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        <Image Source="watermark.png" Width="200" Opacity="0.3" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsHitTestVisible="False" />
+                    </Grid>
                 </GroupBox>
             </Grid>
             <Grid Grid.Row="3">

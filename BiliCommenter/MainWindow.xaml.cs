@@ -279,6 +279,12 @@ namespace BiliCommenter
         }
         private void TasksListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
+            if (TaskListBox.SelectedIndex == -1)
+            {
+                TaskListBox.SelectedIndex = 0;
+                return;
+            }
             var currTask = TaskList[TaskListBox.SelectedIndex];
             MessageTextBox.Text = currTask.Message;
             if (ListBoxChangedByAnother)
@@ -320,7 +326,6 @@ namespace BiliCommenter
         }
         private void AddOrUpdate(object sender, RoutedEventArgs e)
         {
-            ReadTasks();
             if(TaskPair.ContainsKey(BangumiListBox.SelectedItem as string))
             {
                 TaskPair[BangumiListBox.SelectedItem as string].Message = MessageTextBox.Text;
@@ -338,6 +343,7 @@ namespace BiliCommenter
                 TaskList.Add(task);
                 TaskPair.Add(BangumiListBox.SelectedItem as string, task);
                 TaskListBox.Items.Add(task.BangumiInfo.Title);
+                TaskListBox.SelectedItem = BangumiListBox.SelectedItem;
                 task.Start();
             }
             SaveCurrentTasks();
@@ -350,11 +356,13 @@ namespace BiliCommenter
                 TaskList.RemoveAt(taskid);
                 TaskPair.Remove(title);
                 TaskListBox.Items.Remove(title);
+                SaveCurrentTasks();
             });
         }
         private void Remove(object sender, RoutedEventArgs e)
         {
-            ReadTasks();
+            if (TaskListBox.SelectedItem == null)
+                return;
             if (TaskListBox.Items.Count == 0)
                 return;
             var title = TaskListBox.SelectedItem as string;
@@ -372,14 +380,11 @@ namespace BiliCommenter
         }
         private void ReadTasks()
         {
-            foreach (var task in TaskList)
-                task.Dispose();
-            TaskPair.Clear();
-            TaskListBox.Items.Clear();
             if (File.Exists("tasks.json"))
                 TaskList = JsonConvert.DeserializeObject<List<CommentTask>>(File.ReadAllText("tasks.json"));
             if (TaskList == null)
                 TaskList = new List<CommentTask>();
+            var removeList = new List<CommentTask>();
             foreach (var task in TaskList)
             {
                 try
@@ -392,12 +397,16 @@ namespace BiliCommenter
                 }
                 catch (ArgumentOutOfRangeException) // when target time is before the current time, Noticer throws.
                 {
-                    // remove it from
-                    TaskList.Remove(task);
-                    // there should be a logger system..
-                    task.Dispose();
+                    // add it to remove list to prevent the concurrent problem
+                    removeList.Add(task);
+                    MessageBox.Show($"Task with title \"{task.BangumiInfo.Title}\" and message \"{task.Message}\" have been outdated.");
+                    // and there should be a logger system..
                 }
             }
+            foreach (var task in removeList)
+                TaskList.Remove(task); //remove it.
+            removeList.Clear();
+            SaveCurrentTasks(); // save the edited task list.
         }
         private void UpdateSettings(object sender, RoutedEventArgs e)
         {

@@ -2,6 +2,16 @@
 
 ## 0.2.x - currently mainly supporting version
 
+### 0.2.3.0 - Stable
+New features:
+```
+Watermark in inputbox.
+Task inherit behaviour have been changed.
+```
+Fixed the crash bug caused by episode *.5
+
+Since it's stable now won't release runnable binaries anymore due to the abuse reason.
+
 ### 0.2.2.1
 
 New features:
