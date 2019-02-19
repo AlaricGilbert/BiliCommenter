@@ -15,7 +15,6 @@ namespace BiliCommenter.API
             {
                 var result = await client.GetAsync("https://bangumi.bilibili.com/web_api/timeline_global");
                 var context = await result.Content.ReadAsStringAsync();
-                Console.WriteLine(context);
                 return JsonConvert.DeserializeObject<BangumiSeason>(context);
             }
         }
