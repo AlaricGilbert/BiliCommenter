@@ -1,4 +1,6 @@
 # BiliCommenter
+## 由于B站把新番楼层显示去掉了……所以这个抢楼机实际上没有什么作用了……就Archive了⑧.
+
 ## Intro
 
 ![](logo.png)
