@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BiliCommenter"
         mc:Ignorable="d"
-        Title="Bilibili Commenter (built for Nakano Miku)" Height="600" Width="1000">
+        Title="Bilibili Commenter" Height="600" Width="1000">
     <mahCtrls:MetroWindow.Resources>
     </mahCtrls:MetroWindow.Resources>
     <mahCtrls:MetroWindow.RightWindowCommands>

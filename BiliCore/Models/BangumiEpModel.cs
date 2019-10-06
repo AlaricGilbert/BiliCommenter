@@ -9,7 +9,7 @@ namespace BiliCommenter.Models
             public int Avid { get; set; }
             public int Cid { get; set; }
             public int Episode_id { get; set; }
-            public int Index { get; set; }
+            public string Index { get; set; }
 
         }
 

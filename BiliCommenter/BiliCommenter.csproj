@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Version>0.2.4.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +25,7 @@
 
   <ItemGroup>
     <Resource Include="avatar\ic_22.png" />
-    <Resource Include="avatar\ic_22_hide.png"/>
+    <Resource Include="avatar\ic_22_hide.png" />
     <Resource Include="avatar\ic_33.png" />
     <Resource Include="avatar\ic_33_hide.png" />
   </ItemGroup>
