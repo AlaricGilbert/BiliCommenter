@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="WelcomeWindow" Height="512" Width="512" WindowStyle="None" AllowsTransparency="True" Background="#00FFFFFF">
     <Grid>
-        <Image Source="logo.ico"/>
+        <Image Source="pack://application:,,,/logo.ico"/>
     </Grid>
 </Window>

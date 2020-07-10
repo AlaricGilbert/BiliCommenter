@@ -5,6 +5,8 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -52,19 +54,19 @@ namespace BiliCommenter.API
             await Account.FreshStatusAsync();
             if (Account.AccessKey != "") await FreshSSO();
         }
-        public static async Task LoginV3(string username, string password, string captcha = "")
+        public static async Task Login(string username, string password)
         {
             string url = "https://passport.bilibili.com/api/v3/oauth2/login";
-            string data = $"appkey={Common.AppKey}&build={Common.Build}&mobi_app=android&password={Uri.EscapeDataString(await EncryptPassword(password))}&platform=android&ts={Common.TimeSpan}&username={Uri.EscapeDataString(username)}";
-            if (data != "")
-            {
-                data += "&captcha=" + captcha;
-            }
+            var pwd = Uri.EscapeDataString(await EncryptPassword(password));
+
+            string data = $"username={Uri.EscapeDataString(username)}&password={pwd}&gee_type=10&appkey={Common.AppKey}&mobi_app=android&platform=android&ts={Common.TimeSpan}";
             data += "&sign=" + Common.GetSign(data);
             using (HttpClient hc = new HttpClient())
             {
-                hc.DefaultRequestHeaders.Referrer = new Uri("https://www.bilibili.com");
-                var response = await hc.PostAsync(url, new StringContent(data, Encoding.UTF8, "application/x-www-form-urlencoded"));
+                hc.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 BiliDroid/5.44.2 (bbcallen@gmail.com)");
+                hc.DefaultRequestHeaders.Add("referer", "https://www.bilibili.com/");
+                var response = await hc.PostAsync(url, new StringContent(data,Encoding.UTF8, "application/x-www-form-urlencoded"));
+
                 var result = await response.Content.ReadAsStringAsync();
                 var model = JsonConvert.DeserializeObject<AuthModelV3>(result);
                 Account.AccessKey = model.data.token_info.access_token;
@@ -72,26 +74,7 @@ namespace BiliCommenter.API
                 await FreshSSO();
             }
         }
-        public static async Task LoginV2(string username, string password, string captcha = "")
-        {
-            string url = "https://passport.bilibili.com/api/oauth2/login";
-            string data = $"appkey={Common.AppKey}&build={Common.Build}&mobi_app=android&password={Uri.EscapeDataString(await EncryptPassword(password))}&platform=android&ts={Common.TimeSpan}&username={Uri.EscapeDataString(username)}";
-            if (data != "")
-            {
-                data += "&captcha=" + captcha;
-            }
-            data += "&sign=" + Common.GetSign(data);
-            using (HttpClient hc = new HttpClient())
-            {
-                hc.DefaultRequestHeaders.Referrer = new Uri("https://www.bilibili.com");
-                var response = await hc.PostAsync(url, new StringContent(data, Encoding.UTF8, "application/x-www-form-urlencoded"));
-                var result = await response.Content.ReadAsStringAsync();
-                var model = JsonConvert.DeserializeObject<AuthModelV2>(result);
-                Account.AccessKey = model.data.access_token;
-                Account.AuthResultCode = model.code;
-                await FreshSSO();
-            }
-        }
+
         public static async Task FreshSSO()
         {
             var url = $"https://api.kaaass.net/biliapi/user/sso?access_key={Account.AccessKey}";

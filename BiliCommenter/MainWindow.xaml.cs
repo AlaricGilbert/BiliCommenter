@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace BiliCommenter
@@ -87,6 +88,10 @@ namespace BiliCommenter
             if (Settings.Default.IsInheritTasks)
                 ReadTasks();
 
+            // Init caches
+            if (!Directory.Exists("cache"))
+                Directory.CreateDirectory("cache");
+
             #region Read log-in informations
             Thread freshThread = new Thread(async () =>
             {
@@ -121,20 +126,21 @@ namespace BiliCommenter
             {
                 // Get the list of the emojis.
                 var allEmojis = await Common.GetEmojisAsync();
+                var checkedEmojis = await Common.CheckCacheAsync(allEmojis);
 
-                for (int i = 0; i < allEmojis.Data.Count; i++)
+                for (int i = 0; i < checkedEmojis.Count; i++)
                 {
-                    var emojiPack = allEmojis.Data[i];
+                    var emojiPack = checkedEmojis[i];
                     // These part of code is a piece of s**t, but works :).
                     this.Invoke(() =>
                     {
                         var item = new TabItem();
-                        item.Header = emojiPack.Pname;
+                        item.Header = emojiPack.PackName;
                         StackPanel panel = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center };
                         StackPanel stack = null;
-                        for (int j = 0; j < emojiPack.Emojis.Count; j++)
+                        for (int j = 0; j < emojiPack.CheckedEmojis.Count; j++)
                         {
-                            var emoji = emojiPack.Emojis[j];
+                            var emoji = emojiPack.CheckedEmojis[j];
                             if (j % 9 == 0)
                             {
                                 stack = new StackPanel { Orientation = Orientation.Horizontal };
@@ -146,9 +152,9 @@ namespace BiliCommenter
                                 Height = 75,
                                 Content = new Image
                                 {
-                                    Width = 70,
-                                    Height = 70,
-                                    Source = CreateBI(emoji.Url),
+                                    Width = 64,
+                                    Height = 64,
+                                    Source = CreateBI(emoji.ImagePath),
                                     HorizontalAlignment = HorizontalAlignment.Center,
                                     VerticalAlignment = VerticalAlignment.Center
                                 },
@@ -193,8 +199,8 @@ namespace BiliCommenter
         }
         private void ChangeSettingFlyout(object sender, RoutedEventArgs e)
         {
-            IsSaveAccessKey.IsChecked = Settings.Default.IsSaveAccessKey;
-            IsInheritTasks.IsChecked = Settings.Default.IsInheritTasks;
+            IsSaveAccessKey.IsOn = Settings.Default.IsSaveAccessKey;
+            IsInheritTasks.IsOn = Settings.Default.IsInheritTasks;
             SettingsFlyout.IsOpen = !SettingsFlyout.IsOpen;
         }
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -220,7 +226,7 @@ namespace BiliCommenter
             Thread loginThread = new Thread(async () =>
             {
                 // we should handle the exceptions that made it fail to login in the future version.
-                await Auth.LoginV3(username, password);
+                await Auth.Login(username, password);
                 if (Settings.Default.IsSaveAccessKey)
                 {
                     Settings.Default.AccessKey = Account.AccessKey;
@@ -306,24 +312,43 @@ namespace BiliCommenter
         }
         private void EmojiButton_Click(object sender, RoutedEventArgs e)
         {
-            EmojiFlyout.IsOpen = !EmojiFlyout.IsOpen;
-            if (EmojiFlyout.IsOpen)
+            if (!EmojiFlyout.IsOpen)
             {
-                int delta = 40;
-                for (int i = 0; i < 400 / delta; i++)
-                    Height += delta;
+                DoubleAnimation da = new DoubleAnimation(600, 1000, TimeSpan.FromSeconds(0.1));
+                BeginAnimation(HeightProperty, da);
+                Thread th = new Thread(() =>
+                {
+                    Thread.Sleep(100);
+
+                    this.Invoke(() =>
+                    {
+                        EmojiFlyout.IsOpen = !EmojiFlyout.IsOpen;
+                    });
+                });
+                th.Start();
             }
             else
             {
-                Thread th = new Thread(() => {
-                    Thread.Sleep(500);
-                    int delta = 40;
-                    for (int i = 0; i < 400 / delta; i++)
-                        this.Invoke(() => Height -= delta);
+                EmojiFlyout.IsOpen = !EmojiFlyout.IsOpen;
+                Thread th = new Thread(() =>
+                {
+                    Thread.Sleep(100);
+
+                    this.Invoke(() =>
+                    {
+                        DoubleAnimation da = new DoubleAnimation(1000, 600, new Duration(TimeSpan.FromSeconds(0.2)));
+                        CircleEase ease = new CircleEase();
+                        ease.EasingMode = EasingMode.EaseIn;
+                        da.EasingFunction = ease;
+                        
+                        BeginAnimation(HeightProperty, da);
+                    });
                 });
                 th.Start();
             }
         }
+
+
         private void AddOrUpdate(object sender, RoutedEventArgs e)
         {
             if(TaskPair.ContainsKey(BangumiListBox.SelectedItem as string))
@@ -410,8 +435,8 @@ namespace BiliCommenter
         }
         private void UpdateSettings(object sender, RoutedEventArgs e)
         {
-            Settings.Default.IsSaveAccessKey = IsSaveAccessKey.IsChecked == true;
-            Settings.Default.IsInheritTasks = IsInheritTasks.IsChecked == true;
+            Settings.Default.IsSaveAccessKey = IsSaveAccessKey.IsOn == true;
+            Settings.Default.IsInheritTasks = IsInheritTasks.IsOn == true;
             Settings.Default.Save();
         }
     }

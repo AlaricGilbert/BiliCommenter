@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BiliCommenter"
         mc:Ignorable="d"
-        Title="Bilibili Commenter" Height="600" Width="1000">
+        Title="Bilibili Commenter" Height="600" Width="1000" ResizeMode="NoResize">
     <mahCtrls:MetroWindow.Resources>
     </mahCtrls:MetroWindow.Resources>
     <mahCtrls:MetroWindow.RightWindowCommands>
@@ -81,8 +81,8 @@
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <Button Content="Add/Update" Style="{DynamicResource MahApps.Styles.Button.AccentedSquare}" Grid.Row="1" Click="AddOrUpdate"/>
-                    <Button Content="Remove" Style="{DynamicResource MahApps.Styles.Button.AccentedSquare}" Grid.Row="3" Click="Remove"/>
+                    <Button Content="Add/Update" Style="{DynamicResource MahApps.Styles.Button}" Grid.Row="1" Click="AddOrUpdate"/>
+                    <Button Content="Remove" Style="{DynamicResource MahApps.Styles.Button}" Grid.Row="3" Click="Remove"/>
                 </Grid>
             </Grid>
             <Grid Grid.Row="2">
@@ -98,7 +98,7 @@
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Content="Emoji" Style="{DynamicResource MahApps.Styles.Button.AccentedSquare}" Name="EmojiButton" Click="EmojiButton_Click"/>
+                <Button Content="Emoji" Style="{DynamicResource MahApps.Styles.Button}" Name="EmojiButton" Click="EmojiButton_Click"/>
                 <Label Grid.Column="1" Name="MessageTBStatus" HorizontalAlignment="Right"/>
             </Grid>
         </Grid>
@@ -151,19 +151,19 @@
                              mahCtrls:TextBoxHelper.IsWaitingForData="True"
                              mahCtrls:TextBoxHelper.UseFloatingWatermark="True"
                              mahCtrls:TextBoxHelper.Watermark="Password"
-                             Style="{StaticResource MahApps.Styles.PasswordBox.ButtonRevealed}" 
+                             Style="{StaticResource MahApps.Styles.PasswordBox.Button.Revealed}" 
                              KeyDown="PasswordBox_KeyDown"/>
 
                     <StackPanel Orientation="Horizontal" Margin="10 10 10 10">
                         <Button 
                             Content="Login"
                             Width="180"
-                            Style="{DynamicResource MahApps.Styles.Button.AccentedSquare}"
+                            Style="{DynamicResource MahApps.Styles.Button}"
                             Click="LoginButton_Click"/>
                         <Button 
                             Content="Cancel"
                             Width="180"
-                            Style="{DynamicResource MahApps.Styles.Button.AccentedSquare}" Margin="20,0,0,0" 
+                            Style="{DynamicResource MahApps.Styles.Button}" Margin="20,0,0,0" 
                             Click="ChangeLoginFlyout"/>
                     </StackPanel>
                     <Label Margin="10 10 10 10" Name="ResultLabel" Foreground="Red" ></Label>
@@ -181,9 +181,9 @@
             </mahCtrls:Flyout>
             <mahCtrls:Flyout Name="SettingsFlyout" Header="Settings" Position="Right" Width="200" Theme="Accent">
                 <StackPanel Orientation="Vertical">
-                    <mahCtrls:ToggleSwitch Margin="30 10 10 10" Name="IsSaveAccessKey" OnLabel="保存登陆状态" OffLabel="不保存登陆状态" Style="{StaticResource MahApps.Styles.ToggleSwitch.Win10}"/>
-                    <mahCtrls:ToggleSwitch Margin="30 10 10 10" Name="IsInheritTasks" OnLabel="继承任务状态" OffLabel="不继承任务状态" Style="{StaticResource MahApps.Styles.ToggleSwitch.Win10}"/>
-                    <Button Margin="10 10 10 10" Style="{DynamicResource MahApps.Styles.Button.AccentedSquare}" Content="SAVE" Click="UpdateSettings"/>
+                    <mahCtrls:ToggleSwitch Margin="30 10 10 10" Name="IsSaveAccessKey" OnContent="保存登陆状态" OffContent="不保存登陆状态" Style="{StaticResource MahApps.Styles.ToggleSwitch}"/>
+                    <mahCtrls:ToggleSwitch Margin="30 10 10 10" Name="IsInheritTasks" OnContent="继承任务状态" OffContent="不继承任务状态" Style="{StaticResource MahApps.Styles.ToggleSwitch}"/>
+                    <Button Margin="10 10 10 10" Style="{DynamicResource MahApps.Styles.Button}" Content="SAVE" Click="UpdateSettings"/>
                 </StackPanel>
             </mahCtrls:Flyout>
             <mahCtrls:Flyout Name="EmojiFlyout"  
@@ -195,7 +195,7 @@
                              CloseButtonVisibility="Collapsed"
                              Header="Top"
                              TitleVisibility="Collapsed">
-                <mahCtrls:MetroTabControl Name="EmojiTabControl" TabStripPlacement="Bottom" mahCtrls:ControlsHelper.HeaderFontSize="20">
+                <mahCtrls:MetroTabControl Name="EmojiTabControl" TabStripPlacement="Bottom" >
                 </mahCtrls:MetroTabControl>
             </mahCtrls:Flyout>
         </mahCtrls:FlyoutsControl>
